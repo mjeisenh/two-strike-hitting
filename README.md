@@ -14,7 +14,7 @@ Using an unsupervised-to-supervised machine learning pipeline, this study:
 
 ### Project Findings
 
-> Traditional coaching is costing teams runs. This modeling reveals that swing length is the least influential predictor of expected contact quality (6.2% feature importance), while bat speed is the single most critical driver of success (22.9% feature importance). Hitters who do not shorten up ("Free Swingers") outperform traditional "Committed Shorteners" by a statistically significant 19.7 points in predicted xwOBA.
+> Traditional coaching is costing teams runs. This modeling reveals that swing length is the least influential predictor of expected contact quality (6.2% feature importance), while bat speed is the single most critical driver of success (22.9% feature importance). Hitters who do not shorten up ("Free Swingers") outperform traditional "Traditional Shorteners" by a statistically significant 19.7 points in predicted xwOBA.
 > 
 > 
 
@@ -74,7 +74,7 @@ An elbow plot and silhouette analysis identified $k = 3$ as the optimal clusteri
 | --- | --- | --- | --- |
 | **Free Swingers** | 160 | Minimal adjustments. Marginally increased swing length (+0.037 ft) and attack angle (+0.72°); minimal bat speed reduction (-0.92 mph); pulled the ball (-1.623°). | Giancarlo Stanton, Joey Gallo, Roman Anthony|
 | **Moderate Adjustors** | 282 | Measured mechanical concessions. Slower bat speed (-1.387 mph) and shorter length (-0.093 ft).| Shohei Ohtani, Aaron Judge, Juan Soto, Yordan Álvarez |
-| **Committed Shorteners** | 109 | Extreme defensive approach. Drastic speed reduction (-2.178 mph), shortened length (-0.241 ft), and opposite-field focus (+3.651°).| Steven Kwan, J.D. Martinez|
+| **Traditional Shorteners** | 109 | Extreme defensive approach. Drastic speed reduction (-2.178 mph), shortened length (-0.241 ft), and opposite-field focus (+3.651°).| Steven Kwan, J.D. Martinez|
 ---
 
 ## Phase 2: Supervised Outcome Prediction (Quantifying Success)
@@ -126,17 +126,17 @@ Evaluating the predicted two-strike xwOBA across the three clusters reveals a cl
 ```
 Free Swinger        (Mean xwOBA: 0.3655)  ██████████████████████████████
 Moderate Adjustor   (Mean xwOBA: 0.3566)  ████████████████████████████
-Committed Shortener (Mean xwOBA: 0.3458)  ██████████████████████████
+Traditional Shortener (Mean xwOBA: 0.3458)  ██████████████████████████
 
 ```
 
 A **Kruskal-Wallis** test verified that these performance gaps are highly significant ($H = 19.22$, $p < 0.001$). Pairwise comparisons using the **Games-Howell** post-hoc test established:
 
-* **Free Swinger vs. Committed Shortener ($p < 0.001$)**: Free Swingers produce a predicted xwOBA **19.7 points higher** than Committed Shorteners.
+* **Free Swinger vs. Traditional Shortener ($p < 0.001$)**: Free Swingers produce a predicted xwOBA **19.7 points higher** than Traditional Shorteners.
 
 * **Free Swinger vs. Moderate Adjustor ($p = 0.041$)**: Free Swingers maintain a statistically superior profile for pure contact quality, even when compared against a cohort loaded with elite talent.
 
-* **Moderate Adjustor vs. Committed Shortener ($p = 0.029$)**: Controlled, measured concessions heavily outperform the complete mechanical rebuild typical of Shorteners.
+* **Moderate Adjustor vs. Traditional Shortener ($p = 0.029$)**: Controlled, measured concessions heavily outperform the complete mechanical rebuild typical of Shorteners.
 
 ---
 
