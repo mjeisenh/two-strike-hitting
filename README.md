@@ -1,3 +1,5 @@
+**Last Updated:** July 15th, 2026...code upload in progress.
+
 # Shorten Up or Swing Away? A Machine-Learning Approach to Two-Strike Hitting
 
 ## Project Overview
