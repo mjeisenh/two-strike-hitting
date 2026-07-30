@@ -1,22 +1,22 @@
-**Last Updated:** July 15th, 2026...code upload in progress.
+**Last Updated:** July 30th, 2026...code upload in progress.
 
 # Shorten Up or Swing Away? A Machine-Learning Approach to Two-Strike Hitting
 
 ## Project Overview
 
-Conventional baseball wisdom suggests that batters must fundamentally alter their swing mechanics when facing two strikes - commonly referred to as "shortening up," "protecting the plate," or just aiming to make contact. This project challenges that narrative by leveraging MLB Statcast bat-tracking data from the 2024 and 2025 regular seasons.
+Traditional baseball wisdom suggests that batters must fundamentally alter their swing mechanics in two strike counts - commonly referred to as "shortening up," "protecting the plate," or simply put, just put the ball in play. This project explores that narrative through leveraging MLB Statcast bat-tracking data from the 2024 and 2025 regular seasons.
 
-Using an unsupervised-to-supervised machine learning pipeline, this study:
+Using an unsupervised-to-supervised ML pipeline, this study:
 
 * Identifies three distinct mechanical adjustment profiles using Principal Component Analysis (PCA) and K-Means Clustering.
   
 * Predicts expected contact quality (xwOBA) using an XGBoost Regressor trained on pitch-level and swing-level attributes.
   
-* Evaluates performance gaps across batter archetypes using post-hoc statistical testing.
+* Evaluates performance gaps across batter profiles using post-hoc statistical testing.
 
 ### Project Findings
 
-> Traditional coaching is costing teams runs. This modeling reveals that swing length is the least influential predictor of expected contact quality (6.2% feature importance), while bat speed is the single most critical driver of success (22.9% feature importance). Hitters who do not shorten up ("Free Swingers") outperform traditional "Traditional Shorteners" by a statistically significant 19.7 points in predicted xwOBA.
+> Traditional coaching is costing teams runs. This modeling finds that swing length is the least influential predictor of expected contact quality (6.2% feature importance), while bat speed is the single most critical driver of success (22.9% feature importance). Hitters who do not shorten up ("Free Swingers") outperform "Traditional Shorteners" by a statistically significant 19.7 points in predicted xwOBA.
 > 
 > 
 
@@ -28,7 +28,7 @@ The final modeling dataset was constructed from over 500,000 regular-season swin
 
 ```
 Raw Statcast Data (2024-2025) 
-  └── Clean Non-Swings & Bunt Attempts 
+  └── Remove Non-Swings & Bunt Attempts 
         └── Apply Competitive Swing Filter (9.6% removed)
               └── Remove Switch Hitters (72,000 pitches)
                     └── Apply Min. Sample Threshold (40+ two-strike swings)
@@ -36,11 +36,11 @@ Raw Statcast Data (2024-2025)
 
 ```
 
-* **Competitive Swing Filter**: Utilized Statcast's definition of a 'competitive swing', retaining the fastest 90% of each player's swings, and any swing over 60 mph resulting in an exit velocity over 90 mph. This mathematically removes check-swings, swords, and defensive noise.
+* **Competitive Swing Filter**: Utilized Statcast's definition of a 'competitive swing', retaining the fastest 90% of each player's swings, and any swing over 60 mph resulting in an exit velocity over 90 mph. This removes check-swings, swords, and general noise.
 
-* **Switch Hitter Exclusion**: Excluded 67 switch-hitters to preserve directionality interpretability (where negative values represent the pull side and positive values indicate the opposite field).
+* **Switch Hitter Exclusion**: Excluded 67 switch-hitters to preserve attack direction interpretability (where negative values represent the pull side and positive values indicate the opposite field).
 
-* **Target Sample Constraint**: Enforced a minimum threshold of 40 two-strike competitive swings per batter to suppress small-sample variance.
+* **Target Sample Constraint**: Enforced a minimum threshold of 40 two-strike competitive swings per batter to avoid small-sample variance.
 
 ---
 
@@ -52,11 +52,11 @@ To isolate how batters adjust rather than grouping them by baseline physical abi
 
 $$\Delta_{\text{feature}} = \bar{X}_{\text{feature, strikes}=2} - \bar{X}_{\text{feature, strikes}<2}$$
 
-These deltas measure changes in bat speed, swing length, attack angle, attack direction, and swing path tilt.
+These deltas measure changes in bat speed, swing length, attack angle, attack direction, and swing path tilt in two-strike vs. non-two-strike counts.
 
 ### PCA Decomposition
 
-Because human swing mechanics are highly correlated (e.g., shortening a swing has a correlation of $r = 0.75$ with flattening the attack angle), PCA was applied to standardized features to eliminate multicollinearity. Three components were retained, capturing **92.2% of the total variance**:
+Because human swing mechanics are highly correlated (e.g., shortening a swing has a correlation of $r = 0.75$ with flattening the attack angle), PCA was applied to standardized features and eliminate multicollinearity. Three components were retained, capturing **92.2% of the total variance**:
 
 * **PC1: Swing Aggression (57.0% variance)**: Captures swing length, attack angle, attack direction, and bat speed adjustments.
 
@@ -65,7 +65,6 @@ Because human swing mechanics are highly correlated (e.g., shortening a swing ha
 
 
 * **PC3: Residual Speed (13.9% variance)**: Captures effort-level changes in bat speed independent of swing geometry.
-
 
 
 ### K-Means Results
@@ -85,7 +84,7 @@ To evaluate which archetype produces the most impactful outcome with two strikes
 
 ### Target Variable: xwOBA (Expected Weighted On-Base Average)
 
-Unlike box-score statistics (which penalize a batter for hitting a line drive directly into defensive positioning), xwOBA uses Statcast launch speed and launch angle to calculate the expected value of contact, isolating swing quality from defensive luck.
+Unlike batting average, which will penalize a batter for hitting a line drive directly at a fielder, xwOBA uses Statcast launch speed and launch angle to calculate the expected value of contact, isolating swing quality from defensive luck.
 
 ### Model Training & Validation
 
@@ -106,30 +105,28 @@ Unlike box-score statistics (which penalize a batter for hitting a line drive di
 XGBoost feature importances highlight a stark mismatch between traditional strategy and objective data:
 
 ```
-1. Bat Speed           █████████████████████ 22.9%
-2. Plate X (Location)  ████████████ 13.3%
-3. Attack Direction    ██████████ 10.7%
-4. Attack Angle        ██████████ 10.6%
+1. Bat Speed                 █████████████████████ 22.9%
+2. Plate X (Pitch Location)  ████████████ 13.3%
+3. Attack Direction          ██████████ 10.7%
+4. Attack Angle              ██████████ 10.6%
 ...
-8. Swing Length        ██████ 6.2%
-
+8. Swing Length              ██████ 6.2%
 ```
 
 * **Bat Speed** is the single most crucial driver of high-quality contact (22.9%).
 
-* **Swing Length**—the metric coaching traditionalists tell players to aggressively minimize—is the least important mechanical factor (6.2%).
+* **Swing Length**—the metric coaching traditionalists tell players to minimize—is the least important mechanical factor (6.2%).
 
 ---
 
-## Archetype Performance Comparison
+## Swing Profile Performance Comparison
 
 Evaluating the predicted two-strike xwOBA across the three clusters reveals a clear hierarchy:
 
 ```
-Free Swinger        (Mean xwOBA: 0.3655)  ██████████████████████████████
-Moderate Adjustor   (Mean xwOBA: 0.3566)  ████████████████████████████
-Traditional Shortener (Mean xwOBA: 0.3458)  ██████████████████████████
-
+Free Swinger        (Mean Predicted xwOBA: 0.3655)    ██████████████████████████████
+Moderate Adjustor   (Mean Predicted xwOBA: 0.3566)    ████████████████████████████
+Traditional Shortener (Mean Predicted xwOBA: 0.3458)  ██████████████████████████
 ```
 
 A **Kruskal-Wallis** test verified that these performance gaps are highly significant ($H = 19.22$, $p < 0.001$). Pairwise comparisons using the **Games-Howell** post-hoc test established:
@@ -144,7 +141,7 @@ A **Kruskal-Wallis** test verified that these performance gaps are highly signif
 
 ## Key Takeaways
 
-1. **The "Contact Tax" is Real**: While shortening up might minimize the risk of a strikeout, it imposes a severe mechanical penalty on the bat speed and swing path required to hit the ball hard. The resulting balls in play are fundamentally degraded.
+1. **The "Contact Tax" is Real**: While shortening up might minimize the risk of a strikeout, it imposes a severe mechanical penalty on bat speed and swing path required to hit the ball hard. The resulting balls in play are fundamentally degraded.
 
 2. **Modern Pitching Demands Aggression**: In an era of elite high-velocity pitching and optimized defensive positioning, "protecting the plate" should not mean "abandoning the swing".
 
